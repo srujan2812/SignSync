@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignSync - AI Sign Language Recognition</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- MediaPipe JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-hand-sparkles"></i>
+                <span>SignSync</span>
+            </div>
+            <div class="project-title">Sign Language Recognition System</div>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="icon-btn"><i class="fas fa-moon"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard">
+        <div class="left-section">
+            <div class="card camera-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-video"></i> Live Camera Feed</h3>
+                    <div id="hand-indicator" class="status-badge">No Hand Detected</div>
+                </div>
+                <div class="video-container">
+                    <video id="webcam" autoplay playsinline></video>
+                    <canvas id="output-canvas"></canvas>
+                </div>
+                <div class="controls">
+                    <button id="start-btn" class="primary-btn"><i class="fas fa-play"></i> Start Camera</button>
+                    <button id="stop-btn" class="secondary-btn" disabled><i class="fas fa-stop"></i> Stop Camera</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="info-grid">
+                <div class="card stats-card">
+                    <div class="stats-icon purple"><i class="fas fa-sign-language"></i></div>
+                    <div class="stats-content">
+                        <label>Current Gesture</label>
+                        <h2 id="current-gesture">-</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card sentence-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-comment-dots"></i> Sentence Formation</h3>
+                    <div class="waveform-container">
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                        <div class="waveform-bar"></div>
+                    </div>
+                </div>
+                <div id="sentence-box" class="sentence-box">
+                    Waiting for input...
+                </div>
+                <div class="sentence-actions">
+                    <button id="clear-btn" class="tertiary-btn"><i class="fas fa-eraser"></i> Clear Text</button>
+                    <button id="speak-btn" class="primary-btn"><i class="fas fa-volume-up"></i> Speak Output</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Mini Project using Machine Learning & MediaPipe © 2026 SignSync AI</p>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

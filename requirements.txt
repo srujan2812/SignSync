@@ -1,0 +1,10 @@
+mediapipe==0.10.32
+opencv-python-headless
+numpy
+scikit-learn
+Pillow
+darkdetect
+flask
+flask-socketio
+eventlet
+gunicorn

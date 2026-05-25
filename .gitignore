@@ -1,0 +1,25 @@
+# Python virtual environments
+venv/
+.venv/
+sign_env/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data and Models
+sign-language-ai/dataset/
+sign-language-ai/models/*.pkl
+sign-language-ai/models/*.task
+!sign-language-ai/models/sign_model.pkl
+!sign-language-ai/models/hand_landmarker.task
+
+# IDE files
+.vscode/
+.idea/
+.trae/
+
+# OS files
+.DS_Store
+Thumbs.db
