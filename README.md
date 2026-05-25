@@ -1,6 +1,6 @@
 # SignSync - AI Sign Language Recognition
 
-SignSync is a real-time American Sign Language (ASL) recognition system built with Python, MediaPipe, and Flask. It uses a Random Forest classifier to interpret hand gestures from a webcam feed and provides a modern web interface for interaction.
+SignSync is a real-time American Sign Language (ASL) recognition system... built with Python, MediaPipe, and Flask. It uses a Random Forest classifier to interpret hand gestures from a webcam feed and provides a modern web interface for interaction.
 
 ## Features
 - **Real-time Recognition**: Fast and accurate ASL fingerspelling interpretation.
