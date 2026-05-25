@@ -7,4 +7,4 @@ darkdetect
 flask
 flask-socketio
 eventlet==0.35.2
-gunicorn[eventlet]
+gunicorn==22.0.0
