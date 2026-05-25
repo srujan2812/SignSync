@@ -1,10 +1,10 @@
 mediapipe==0.10.32
 opencv-python-headless
-numpy
+numpy==1.26.4
 scikit-learn
 Pillow
 darkdetect
 flask
 flask-socketio
-eventlet
+eventlet==0.35.2
 gunicorn
