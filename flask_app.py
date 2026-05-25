@@ -48,15 +48,24 @@ def handle_prediction(data):
         prediction = gesture_model.predict(features)[0]
         
         # Get confidence (if model supports it)
-        confidence = 100
+        confidence = 0
         if hasattr(gesture_model, "predict_proba"):
             probabilities = gesture_model.predict_proba(features)
             confidence = float(np.max(probabilities) * 100)
 
+        # Filter out low-confidence predictions to prevent false positives
+        if confidence < 65: # Require at least 65% certainty
+            emit('prediction_result', {
+                'gesture': 'NONE',
+                'confidence': round(confidence, 2),
+                'status': 'Uncertain'
+            })
+            return
+
         emit('prediction_result', {
             'gesture': prediction.upper(),
             'confidence': round(confidence, 2),
-            'status': 'Static' # Simple placeholder for now
+            'status': 'Static'
         })
     except Exception as e:
         emit('prediction_result', {'error': str(e)})

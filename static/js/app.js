@@ -16,12 +16,14 @@ const videoWrapper = document.getElementById('video-wrapper');
 let currentSentence = "";
 let camera = null;
 let currentFacingMode = 'user'; // 'user' for front, 'environment' for back
+let lastEmitTime = 0;
+const EMIT_INTERVAL = 200; // Send landmark every 200ms (5 times per second)
 const socket = io();
 
 // Stability tracking
 let lastPredictedGesture = "";
 let gestureStartTime = 0;
-const STABILITY_TIME = 1000; // 1 second delay
+const STABILITY_TIME = 700; // Reduced from 1000ms to 700ms for faster feel
 
 // Theme Toggle
 themeToggle.addEventListener('click', () => {
@@ -104,8 +106,12 @@ function onResults(results) {
                 flattenedLandmarks.push(lm.x, lm.y, lm.z);
             });
 
-            // Send to backend for prediction
-            socket.emit('predict', { landmarks: flattenedLandmarks });
+            // Throttled emission: only send if interval has passed
+            const now = Date.now();
+            if (now - lastEmitTime > EMIT_INTERVAL) {
+                socket.emit('predict', { landmarks: flattenedLandmarks });
+                lastEmitTime = now;
+            }
         } else {
             handIndicator.textContent = "No Hand Detected";
             handIndicator.classList.remove('active');
