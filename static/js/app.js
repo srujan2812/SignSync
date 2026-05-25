@@ -9,9 +9,13 @@ const themeToggle = document.getElementById('theme-toggle');
 const handIndicator = document.getElementById('hand-indicator');
 const gestureDisplay = document.getElementById('current-gesture');
 const sentenceBox = document.getElementById('sentence-box');
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+const switchCameraBtn = document.getElementById('switch-camera-btn');
+const videoWrapper = document.getElementById('video-wrapper');
 
 let currentSentence = "";
 let camera = null;
+let currentFacingMode = 'user'; // 'user' for front, 'environment' for back
 const socket = io();
 
 // Stability tracking
@@ -29,6 +33,36 @@ themeToggle.addEventListener('click', () => {
     } else {
         body.setAttribute('data-theme', 'dark');
         icon.className = 'fas fa-sun';
+    }
+});
+
+// Fullscreen Logic
+fullscreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+        if (videoWrapper.requestFullscreen) {
+            videoWrapper.requestFullscreen();
+        } else if (videoWrapper.webkitRequestFullscreen) { /* Safari */
+            videoWrapper.webkitRequestFullscreen();
+        } else if (videoWrapper.msRequestFullscreen) { /* IE11 */
+            videoWrapper.msRequestFullscreen();
+        }
+        fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+            document.msExitFullscreen();
+        }
+        fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+    }
+});
+
+// Update fullscreen button icon on escape
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+        fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
     }
 });
 
@@ -104,42 +138,48 @@ socket.on('prediction_result', (data) => {
     }
 
     if (detectedGesture !== lastPredictedGesture) {
-        // Gesture changed, start timing
         lastPredictedGesture = detectedGesture;
         gestureStartTime = Date.now();
     } else {
-        // Same gesture, check if 1.5s has passed
         if (gestureStartTime > 0) {
             const elapsedTime = Date.now() - gestureStartTime;
             if (elapsedTime >= STABILITY_TIME) {
-                // Stable! Add to sentence
                 if (currentSentence === "Waiting for input...") currentSentence = "";
                 
                 currentSentence += detectedGesture;
                 sentenceBox.textContent = currentSentence;
                 
-                // Speak the individual letter
                 const utterance = new SpeechSynthesisUtterance(detectedGesture);
                 window.speechSynthesis.speak(utterance);
 
-                // Reset timer to prevent multiple additions for one hold
                 gestureStartTime = 0; 
-                lastPredictedGesture = ""; // Force user to reset hand or change gesture
+                lastPredictedGesture = ""; 
             }
         }
     }
 });
 
-// Camera Controls
-startBtn.addEventListener('click', () => {
+async function startCamera(facingMode = 'user') {
+    if (camera) {
+        await camera.stop();
+    }
+
     camera = new Camera(videoElement, {
         onFrame: async () => {
             await hands.send({image: videoElement});
         },
-        width: 1280,
-        height: 720
+        facingMode: facingMode,
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
     });
-    camera.start();
+    
+    await camera.start();
+    currentFacingMode = facingMode;
+}
+
+// Camera Controls
+startBtn.addEventListener('click', async () => {
+    await startCamera(currentFacingMode);
     startBtn.disabled = true;
     stopBtn.disabled = false;
 });
@@ -148,14 +188,21 @@ stopBtn.addEventListener('click', () => {
     if (camera) {
         camera.stop();
         const stream = videoElement.srcObject;
-        const tracks = stream.getTracks();
-        tracks.forEach(track => track.stop());
+        if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop());
+        }
         videoElement.srcObject = null;
     }
     startBtn.disabled = false;
     stopBtn.disabled = true;
     handIndicator.textContent = "Camera Stopped";
     handIndicator.classList.remove('active');
+});
+
+switchCameraBtn.addEventListener('click', async () => {
+    const newMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    await startCamera(newMode);
 });
 
 clearBtn.addEventListener('click', () => {

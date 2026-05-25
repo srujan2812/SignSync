@@ -38,13 +38,15 @@
                     <h3><i class="fas fa-video"></i> Live Camera Feed</h3>
                     <div id="hand-indicator" class="status-badge">No Hand Detected</div>
                 </div>
-                <div class="video-container">
+                <div class="video-container" id="video-wrapper">
                     <video id="webcam" autoplay playsinline></video>
                     <canvas id="output-canvas"></canvas>
+                    <button id="fullscreen-btn" class="overlay-btn"><i class="fas fa-expand"></i></button>
                 </div>
                 <div class="controls">
-                    <button id="start-btn" class="primary-btn"><i class="fas fa-play"></i> Start Camera</button>
-                    <button id="stop-btn" class="secondary-btn" disabled><i class="fas fa-stop"></i> Stop Camera</button>
+                    <button id="start-btn" class="primary-btn"><i class="fas fa-play"></i> Start</button>
+                    <button id="stop-btn" class="secondary-btn" disabled><i class="fas fa-stop"></i> Stop</button>
+                    <button id="switch-camera-btn" class="tertiary-btn"><i class="fas fa-camera-rotate"></i> Switch</button>
                 </div>
             </div>
         </div>
